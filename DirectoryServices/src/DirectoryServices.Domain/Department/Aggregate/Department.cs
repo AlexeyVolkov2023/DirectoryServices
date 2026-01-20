@@ -53,9 +53,9 @@ public class Department
 
     public IReadOnlyList<Department> Children => _children;
 
-    public List<DepartmentLocation> DepartmentLocations { get; private set; }
+    public IReadOnlyList<DepartmentLocation> DepartmentLocations { get; private set; }
 
-    public List<DepartmentPosition> DepartmentPositions { get; private set; }
+    public IReadOnlyList<DepartmentPosition> DepartmentPositions { get; private set; }
 
 
     public static Result<Department> Create(
