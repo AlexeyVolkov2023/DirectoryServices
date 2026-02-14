@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryServices.Domain.DepartmentManagement.Supporting;
 using DirectoryServices.Domain.LocationManagement.Id;
 using DirectoryServices.Domain.LocationManagement.ValueObjects;
 
@@ -6,14 +7,18 @@ namespace DirectoryServices.Domain.LocationManagement.Aggregate;
 
 public class Location
 {
+    public Location()
+    {
+    }
+
     private Location(
-        LocationName name,
+        LocationName locationName,
         Address address,
         Timezone timezone,
         bool isActive)
     {
         Id = LocationId.NewLocationId();
-        Name = name;
+        LocationName = locationName;
         Address = address;
         Timezone = timezone;
         IsActive = isActive;
@@ -23,7 +28,7 @@ public class Location
 
     public LocationId Id { get; private set; }
 
-    public LocationName Name { get; private set; }
+    public LocationName LocationName { get; private set; }
 
     public Address Address { get; private set; }
 
@@ -36,21 +41,21 @@ public class Location
     public DateTime UpdatedAt { get; private set; }
 
     public static Result<Location> Create(
-        LocationName name,
+        LocationName locationName,
         Address address,
         Timezone timezone,
         bool isActive)
     {
         return Result.Success(new Location(
-            name: name,
-            address: address,
-            timezone: timezone,
-            isActive: isActive));
+            locationName,
+            address,
+            timezone,
+            isActive));
     }
 
-    public void UpdateName(LocationName newName)
+    public void UpdateName(LocationName newLocationName)
     {
-        Name = newName;
+        LocationName = newLocationName;
         UpdatedAt = DateTime.UtcNow;
     }
 

@@ -1,6 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 
-namespace DirectoryServices.Domain.Department.ValueObjects;
+namespace DirectoryServices.Domain.DepartmentManagement.ValueObjects;
 
 public record Depth
 {

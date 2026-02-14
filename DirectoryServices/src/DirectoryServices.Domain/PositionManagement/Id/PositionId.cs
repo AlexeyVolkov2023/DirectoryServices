@@ -15,7 +15,7 @@ public record PositionId
 
     public static PositionId Create(Guid id) => new(id);
 
-    public static implicit operator PositionId(Guid id) => new PositionId(id);
+    public static implicit operator PositionId(Guid id) => new(id);
 
     public static implicit operator Guid(PositionId positionId)
     {
