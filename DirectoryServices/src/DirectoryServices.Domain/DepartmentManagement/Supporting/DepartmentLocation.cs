@@ -22,7 +22,7 @@ public record DepartmentLocation
 
     public DepartmentLocationId DepartmentLocationId { get; }
 
-    public Department Department { get; private set; }
+    public Department Department { get; }
 
     public LocationId LocationId { get; }
 

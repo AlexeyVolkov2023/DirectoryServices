@@ -19,7 +19,7 @@ public record DepartmentPosition
 
     public DepartmentPositionId DepartmentPositionId { get; }
 
-    public Department Department { get; private set; }
+    public Department Department { get; }
 
     public PositionId PositionId { get; }
 
