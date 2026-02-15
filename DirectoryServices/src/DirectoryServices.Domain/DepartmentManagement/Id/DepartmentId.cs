@@ -1,4 +1,4 @@
-﻿namespace DirectoryServices.Domain.Department.Id;
+﻿namespace DirectoryServices.Domain.DepartmentManagement.Id;
 
 public record DepartmentId
 {

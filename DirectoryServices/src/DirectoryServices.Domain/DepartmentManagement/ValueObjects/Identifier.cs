@@ -1,13 +1,10 @@
 ﻿using System.Text.RegularExpressions;
 using CSharpFunctionalExtensions;
 
-namespace DirectoryServices.Domain.Department.ValueObjects;
+namespace DirectoryServices.Domain.DepartmentManagement.ValueObjects;
 
 public record Identifier
 {
-    private const int MAX_LENGTH = 150;
-    private const int MIN_LENGTH = 3;
-
     private Identifier(string value)
     {
         Value = value;
@@ -20,10 +17,11 @@ public record Identifier
         if (string.IsNullOrWhiteSpace(value))
             return Result.Failure<Identifier>("Identifier cannot be null or empty.");
 
-        if (value.Length < MIN_LENGTH || value.Length > MAX_LENGTH)
+        if (value.Length < LengthConstants.Length3 || value.Length > LengthConstants.Length150)
         {
             return Result.Failure<Identifier>(
-                $"Identifier must be between {MIN_LENGTH} and {MAX_LENGTH} characters long.");
+                $"Identifier must be between {LengthConstants.Length3}" +
+                $" and {LengthConstants.Length150} characters long.");
         }
 
         if (!Regex.IsMatch(value, @"^[a-zA-Z0-9-]+$"))

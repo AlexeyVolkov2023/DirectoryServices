@@ -6,7 +6,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectoryServices.Domain", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectoryServices.Application", "src\DirectoryServices.Application\DirectoryServices.Application.csproj", "{FEB5486D-6860-4298-8725-D9A11199AAAF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectoryServices.Infrastructure", "src\DirectoryServices.Infrastructure\DirectoryServices.Infrastructure.csproj", "{9B0BA453-1DD4-4B4F-9BEA-4A88CA7FFE84}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectoryServices.Infrastructure.Postgresql", "src\DirectoryServices.Infrastructure.Postgresql\DirectoryServices.Infrastructure.Postgresql.csproj", "{9B0BA453-1DD4-4B4F-9BEA-4A88CA7FFE84}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DirectoryServices.Contracts", "src\DirectoryServices.Contracts\DirectoryServices.Contracts.csproj", "{D717C4DE-78C3-4363-9874-D13634E7660A}"
 EndProject

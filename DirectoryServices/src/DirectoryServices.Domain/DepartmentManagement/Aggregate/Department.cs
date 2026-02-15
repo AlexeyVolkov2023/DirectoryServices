@@ -1,14 +1,24 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryServices.Domain.Department.Id;
-using DirectoryServices.Domain.Department.Supporting;
-using DirectoryServices.Domain.Department.ValueObjects;
-using Path = DirectoryServices.Domain.Department.ValueObjects.Path;
+using DirectoryServices.Domain.DepartmentManagement.Id;
+using DirectoryServices.Domain.DepartmentManagement.Supporting;
+using DirectoryServices.Domain.DepartmentManagement.ValueObjects;
+using DirectoryServices.Domain.LocationManagement.Id;
+using DirectoryServices.Domain.PositionManagement.Id;
+using Path = DirectoryServices.Domain.DepartmentManagement.ValueObjects.Path;
 
-namespace DirectoryServices.Domain.Department.Aggregate;
+namespace DirectoryServices.Domain.DepartmentManagement.Aggregate;
 
 public class Department
 {
     private readonly List<Department> _children = [];
+
+    private readonly List<DepartmentLocation> _departmentLocations;
+
+    private readonly List<DepartmentPosition> _departmentPositions;
+
+    public Department()
+    {
+    }
 
     private Department(
         DepartmentName departmentName,
@@ -17,8 +27,8 @@ public class Department
         Department? parent,
         Depth depth,
         bool isActive,
-        IEnumerable<DepartmentLocation> departmentLocations,
-        IEnumerable<DepartmentPosition> departmentPositions)
+        IEnumerable<Guid> locationIds,
+        IEnumerable<Guid> positionIds)
     {
         Id = DepartmentId.NewDepartmentId();
         DepartmentName = departmentName;
@@ -29,8 +39,24 @@ public class Department
         IsActive = isActive;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
-        DepartmentLocations = departmentLocations.ToList();
-        DepartmentPositions = departmentPositions.ToList();
+
+        var locations = locationIds.Select(locationId =>
+            new DepartmentLocation(
+                DepartmentLocationId.NewDepartmentLocationId(),
+                this,
+                LocationId.Create(locationId)))
+            .ToList();
+
+        var positions = positionIds.Select(positionId =>
+            new DepartmentPosition(
+                DepartmentPositionId.NewDepartmentPositionId(),
+                this,
+                PositionId.Create(positionId)))
+            .ToList();
+
+        _departmentLocations = locations;
+
+        _departmentPositions = positions;
     }
 
     public DepartmentId Id { get; private set; }
@@ -53,9 +79,9 @@ public class Department
 
     public IReadOnlyList<Department> Children => _children;
 
-    public IReadOnlyList<DepartmentLocation> DepartmentLocations { get; private set; }
+    public IReadOnlyList<DepartmentLocation> DepartmentLocations => _departmentLocations;
 
-    public IReadOnlyList<DepartmentPosition> DepartmentPositions { get; private set; }
+    public IReadOnlyList<DepartmentPosition> DepartmentPositions => _departmentPositions;
 
 
     public static Result<Department> Create(
@@ -64,18 +90,9 @@ public class Department
         Department? parent,
         Depth depth,
         bool isActive,
-        IEnumerable<DepartmentLocation> departmentLocations,
-        IEnumerable<DepartmentPosition> departmentPositions)
+        IEnumerable<Guid> locationIds,
+        IEnumerable<Guid> positionIds)
     {
-        var locationsList = departmentLocations?.ToList() ?? new List<DepartmentLocation>();
-        var positionsList = departmentPositions?.ToList() ?? new List<DepartmentPosition>();
-
-        if (locationsList.Count == 0)
-            return Result.Failure<Department>("DepartmentLocations must contain at least one item.");
-
-        if (positionsList.Count == 0)
-            return Result.Failure<Department>("DepartmentPositions must contain at least one item.");
-
         var path = BuildPath(parent, identifier).Value;
 
         return new Department(
@@ -85,8 +102,8 @@ public class Department
             parent,
             depth,
             isActive,
-            locationsList,
-            positionsList);
+            locationIds,
+            positionIds);
     }
 
     private static Result<Path> BuildPath(Department? parent, Identifier identifier)

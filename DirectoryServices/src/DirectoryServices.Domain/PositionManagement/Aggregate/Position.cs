@@ -6,6 +6,10 @@ namespace DirectoryServices.Domain.PositionManagement.Aggregate;
 
 public class Position
 {
+    public Position()
+    {
+    }
+
     private Position(
         PositionName positionName,
         Description description,

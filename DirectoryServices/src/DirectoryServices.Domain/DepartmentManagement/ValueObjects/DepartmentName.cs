@@ -1,12 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
 
-namespace DirectoryServices.Domain.Department.ValueObjects;
+namespace DirectoryServices.Domain.DepartmentManagement.ValueObjects;
 
 public record DepartmentName
 {
-    private const int MAX_LENGTH = 150;
-    private const int MIN_LENGTH = 3;
-
     private DepartmentName(string value)
     {
         Value = value;
@@ -20,8 +17,12 @@ public record DepartmentName
         if (string.IsNullOrWhiteSpace(value))
             return Result.Failure<DepartmentName>("DepartmentName cannot be null or empty.");
 
-        if (value.Length < MIN_LENGTH || value.Length > MAX_LENGTH)
-            return Result.Failure<DepartmentName>($"DepartmentName must be between {MIN_LENGTH} and {MAX_LENGTH} characters long.");
+        if (value.Length < LengthConstants.Length3 || value.Length > LengthConstants.Length150)
+        {
+            return Result.Failure<DepartmentName>(
+                $"DepartmentName must be between {LengthConstants.Length3} " +
+                $"and {LengthConstants.Length150} characters long.");
+        }
 
         return Result.Success(new DepartmentName(value));
     }
