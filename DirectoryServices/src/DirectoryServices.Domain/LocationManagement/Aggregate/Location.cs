@@ -14,14 +14,13 @@ public class Location
     private Location(
         LocationName locationName,
         Address address,
-        Timezone timezone,
-        bool isActive)
+        Timezone timezone)
     {
         Id = LocationId.NewLocationId();
         LocationName = locationName;
         Address = address;
         Timezone = timezone;
-        IsActive = isActive;
+        IsActive = true;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
     }
@@ -43,14 +42,12 @@ public class Location
     public static Result<Location> Create(
         LocationName locationName,
         Address address,
-        Timezone timezone,
-        bool isActive)
+        Timezone timezone)
     {
         return Result.Success(new Location(
             locationName,
             address,
-            timezone,
-            isActive));
+            timezone));
     }
 
     public void UpdateName(LocationName newLocationName)

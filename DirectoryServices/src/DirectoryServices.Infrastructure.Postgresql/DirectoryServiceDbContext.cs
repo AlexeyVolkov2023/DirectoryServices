@@ -1,4 +1,5 @@
-﻿using DirectoryServices.Domain.DepartmentManagement.Aggregate;
+﻿using DirectoryServices.Application.Database;
+using DirectoryServices.Domain.DepartmentManagement.Aggregate;
 using DirectoryServices.Domain.LocationManagement.Aggregate;
 using DirectoryServices.Domain.PositionManagement.Aggregate;
 using Microsoft.EntityFrameworkCore;
@@ -6,11 +7,11 @@ using Microsoft.Extensions.Logging;
 
 namespace DirectoryServices.Infrastructure;
 
-public class DirectoryServicesDbContext : DbContext
+public class DirectoryServiceDbContext : DbContext, IDirectoryServiceDbContext
 {
     private readonly string _connectionString;
 
-    public DirectoryServicesDbContext(string connectionString)
+    public DirectoryServiceDbContext(string connectionString)
     {
         _connectionString = connectionString;
     }
@@ -26,7 +27,7 @@ public class DirectoryServicesDbContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.ApplyConfigurationsFromAssembly(typeof(DirectoryServicesDbContext).Assembly);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(DirectoryServiceDbContext).Assembly);
     }
 
     public DbSet<Department> Departments => Set<Department>();
