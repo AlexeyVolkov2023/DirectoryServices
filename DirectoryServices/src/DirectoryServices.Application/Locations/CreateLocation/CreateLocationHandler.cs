@@ -1,7 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryServices.Application.Abstractions;
-using DirectoryServices.Application.Database;
-using DirectoryServices.Contracts;
 using DirectoryServices.Domain.LocationManagement.Aggregate;
 using DirectoryServices.Domain.LocationManagement.ValueObjects;
 using Microsoft.Extensions.Logging;
@@ -29,20 +27,40 @@ public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand
         CancellationToken cancellationToken)
     {
         // validation
-        var locationName = LocationName.Create(command.LocationName).Value;
+        var locationNameResult = LocationName.Create(command.LocationName);
+        if (locationNameResult.IsFailure)
+            return Result.Failure<Guid>(locationNameResult.Error);
 
-        var address = Address.Create(
+
+        var locationName = locationNameResult.Value;
+
+        var addressResult = Address.Create(
             command.AddressDto.Country,
             command.AddressDto.Region,
             command.AddressDto.City,
             command.AddressDto.Street,
-            command.AddressDto.HouseNumber).Value;
+            command.AddressDto.HouseNumber);
+        if (addressResult.IsFailure)
+            return Result.Failure<Guid>(addressResult.Error);
 
-        var timezone = Timezone.Create(command.Timezone).Value;
+        var address = addressResult.Value;
 
-        var location = Location.Create(locationName, address, timezone).Value;
+        var timezoneResult = Timezone.Create(command.Timezone);
+        if (timezoneResult.IsFailure)
+            return Result.Failure<Guid>(timezoneResult.Error);
+
+        var timezone = timezoneResult.Value;
+
+        var locationResult = Location.Create(locationName, address, timezone);
+        if (locationResult.IsFailure)
+            return Result.Failure<Guid>(locationResult.Error);
+
+        var location = locationResult.Value;
+
 
         var result = await _locationRepository.AddAsync(location, cancellationToken);
+
+        _logger.LogInformation("Created location with Id {location.Id}", location.Id);
 
         return result;
     }

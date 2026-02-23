@@ -1,5 +1,4 @@
-﻿using DirectoryServices.Application.Database;
-using DirectoryServices.Application.Locations;
+﻿using DirectoryServices.Application.Locations;
 using DirectoryServices.Infrastructure.Repositiories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,7 +12,7 @@ public static class DependencyInjection
         IConfiguration configuration)
     {
         serviceCollection.AddScoped<ILocationRepository, LocationRepository>();
-        serviceCollection.AddScoped<IDirectoryServiceDbContext, DirectoryServiceDbContext>(_ =>
+        serviceCollection.AddScoped<DirectoryServiceDbContext>(_ =>
             new DirectoryServiceDbContext(configuration.GetConnectionString("DirectoryServiceDb")!));
 
         return serviceCollection;

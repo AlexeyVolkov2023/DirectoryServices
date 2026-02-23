@@ -1,5 +1,4 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryServices.Application.Database;
 using DirectoryServices.Application.Locations;
 using DirectoryServices.Domain.LocationManagement.Aggregate;
 
@@ -7,9 +6,9 @@ namespace DirectoryServices.Infrastructure.Repositiories;
 
 public class LocationRepository : ILocationRepository
 {
-    private readonly IDirectoryServiceDbContext _dbContext;
+    private readonly DirectoryServiceDbContext _dbContext;
 
-    public LocationRepository(IDirectoryServiceDbContext dbContext)
+    public LocationRepository(DirectoryServiceDbContext dbContext)
     {
         _dbContext = dbContext;
     }
