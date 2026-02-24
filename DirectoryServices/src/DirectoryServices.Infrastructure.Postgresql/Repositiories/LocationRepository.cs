@@ -15,10 +15,15 @@ public class LocationRepository : ILocationRepository
 
     public async Task<Result<Guid>> AddAsync(Location location, CancellationToken cancellationToken)
     {
-        await _dbContext.Locations.AddAsync(location, cancellationToken);
-
-        await _dbContext.SaveChangesAsync(cancellationToken);
-
-        return location.Id.Value;
+        try
+        {
+            await _dbContext.Locations.AddAsync(location, cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            return location.Id.Value;
+        }
+        catch (Exception e)
+        {
+            return Result.Failure<Guid>(e.Message);
+        }
     }
 }
