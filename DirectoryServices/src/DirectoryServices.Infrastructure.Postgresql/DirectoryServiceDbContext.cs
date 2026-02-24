@@ -1,5 +1,4 @@
-﻿using DirectoryServices.Application.Database;
-using DirectoryServices.Domain.DepartmentManagement.Aggregate;
+﻿using DirectoryServices.Domain.DepartmentManagement.Aggregate;
 using DirectoryServices.Domain.LocationManagement.Aggregate;
 using DirectoryServices.Domain.PositionManagement.Aggregate;
 using Microsoft.EntityFrameworkCore;
@@ -7,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace DirectoryServices.Infrastructure;
 
-public class DirectoryServiceDbContext : DbContext, IDirectoryServiceDbContext
+public class DirectoryServiceDbContext : DbContext
 {
     private readonly string _connectionString;
 
