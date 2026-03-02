@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryServices.Domain.Shared;
 
 namespace DirectoryServices.Domain.LocationManagement.ValueObjects;
 
@@ -29,7 +30,7 @@ public record Address
     public string Country { get; }
 
 
-    public static Result<Address> Create(
+    public static Result<Address, Error> Create(
         string country,
         string region,
         string city,
@@ -37,26 +38,26 @@ public record Address
         string houseNumber)
     {
         if (string.IsNullOrWhiteSpace(country))
-            return Result.Failure<Address>("Country can not by empty");
+            return GeneralErrors.ValueIsInvalid(country);
 
         if (string.IsNullOrWhiteSpace(region))
-            return Result.Failure<Address>("Region can not by empty");
+            return GeneralErrors.ValueIsInvalid(region);
 
         if (string.IsNullOrWhiteSpace(city))
-            return Result.Failure<Address>("City can not by empty");
+            return GeneralErrors.ValueIsInvalid(city);
 
         if (string.IsNullOrWhiteSpace(street))
-            return Result.Failure<Address>("Street can not by empty");
+            return GeneralErrors.ValueIsInvalid(street);
 
         if (string.IsNullOrWhiteSpace(houseNumber))
-            return Result.Failure<Address>("House number can not by empty");
+            return GeneralErrors.ValueIsInvalid(houseNumber);
 
 
-        return Result.Success(new Address(
+        return new Address(
             country,
             region,
             city,
             street,
-            houseNumber));
+            houseNumber);
     }
 }

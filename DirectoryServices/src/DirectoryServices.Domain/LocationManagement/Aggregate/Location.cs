@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryServices.Domain.DepartmentManagement.Supporting;
 using DirectoryServices.Domain.LocationManagement.Id;
 using DirectoryServices.Domain.LocationManagement.ValueObjects;
+using DirectoryServices.Domain.Shared;
 
 namespace DirectoryServices.Domain.LocationManagement.Aggregate;
 
@@ -39,15 +39,12 @@ public class Location
 
     public DateTime UpdatedAt { get; private set; }
 
-    public static Result<Location> Create(
+    public static Result<Location, Error> Create(
         LocationName locationName,
         Address address,
         Timezone timezone)
     {
-        return Result.Success(new Location(
-            locationName,
-            address,
-            timezone));
+        return new Location(locationName, address, timezone);
     }
 
     public void UpdateName(LocationName newLocationName)

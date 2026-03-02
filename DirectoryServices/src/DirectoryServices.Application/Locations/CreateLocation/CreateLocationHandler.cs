@@ -36,7 +36,6 @@ public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand
                 "LocationName is invalid"));
         }
 
-
         var locationName = locationNameResult.Value;
 
         var addressResult = Address.Create(
@@ -68,7 +67,7 @@ public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand
         if (locationResult.IsFailure)
         {
             return Error.Validation(new ErrorMessage(
-                "locationResult.is.invalid", 
+                "locationResult.is.invalid",
                 "Location is invalid"));
         }
 

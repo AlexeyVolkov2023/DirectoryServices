@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryServices.Domain.Shared;
 
 namespace DirectoryServices.Domain.LocationManagement.ValueObjects;
 
@@ -11,11 +12,13 @@ public record Timezone
 
     public string Value { get; }
 
-    public static Result<Timezone> Create(string timezone)
+    public static Result<Timezone, Error> Create(string timezone)
     {
         if (string.IsNullOrWhiteSpace(timezone))
-            return Result.Failure<Timezone>("Timezone cannot be null or empty.");
+        {
+            return GeneralErrors.ValueIsInvalid(timezone);
+        }
 
-        return Result.Success(new Timezone(timezone));
+        return new Timezone(timezone);
     }
 }

@@ -1,5 +1,3 @@
-using DirectoryServices.Application.Database;
-using DirectoryServices.Infrastructure;
 using DirectoryServices.Web;
 
 var builder = WebApplication.CreateBuilder(args);

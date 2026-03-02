@@ -22,4 +22,8 @@
       <ProjectReference Include="..\DirectoryServices.Infrastructure.Postgresql\DirectoryServices.Infrastructure.Postgresql.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Controllers\LocationControllers\Requests\" />
+    </ItemGroup>
+
 </Project>
