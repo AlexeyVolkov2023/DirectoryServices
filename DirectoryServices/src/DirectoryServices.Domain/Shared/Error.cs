@@ -9,12 +9,20 @@ public record Error
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public ErrorType Type { get; }
 
+    private Error(IReadOnlyList<ErrorMessage> messages, ErrorType type)
+    {
+        Messages = messages.ToArray();
+        Type = type;
+    }
+
 
     private Error(IEnumerable<ErrorMessage> messages, ErrorType type)
     {
         Messages = messages.ToList();
         Type = type;
     }
+
+    public string GetMessage() => string.Join(";", Messages.Select(m => m.ToString()));
 
     public static Error Validation(string code, string message, string? invalidField = null) =>
         new([new ErrorMessage(code, message, invalidField)], ErrorType.VALIDATION);
@@ -51,4 +59,4 @@ public enum ErrorType
     CONFLICT,
 }
 
-public record ErrorMessage(string code, string message, string? invalidField = null);
+public record ErrorMessage(string Code, string Message, string? InvalidField = null);
