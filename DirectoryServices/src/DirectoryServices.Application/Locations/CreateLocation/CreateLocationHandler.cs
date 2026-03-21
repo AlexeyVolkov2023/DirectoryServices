@@ -1,8 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryServices.Application.Abstractions;
+using DirectoryServices.Application.Extensions;
 using DirectoryServices.Domain.LocationManagement.Aggregate;
 using DirectoryServices.Domain.LocationManagement.ValueObjects;
 using DirectoryServices.Domain.Shared;
+using FluentValidation;
 using Microsoft.Extensions.Logging;
 
 namespace DirectoryServices.Application.Locations.CreateLocation;
@@ -11,13 +13,16 @@ public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand
 {
     private readonly ILogger<CreateLocationHandler> _logger;
     private readonly ILocationRepository _locationRepository;
+    private readonly IValidator<CreateLocationCommand> _validator;
 
     public CreateLocationHandler(
         ILogger<CreateLocationHandler> logger,
-        ILocationRepository locationRepository)
+        ILocationRepository locationRepository,
+        IValidator<CreateLocationCommand> validator)
     {
         _logger = logger;
         _locationRepository = locationRepository;
+        _validator = validator;
     }
 
     /// <summary>
@@ -27,52 +32,24 @@ public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand
         CreateLocationCommand command,
         CancellationToken cancellationToken)
     {
-        // validation
-        var locationNameResult = LocationName.Create(command.CreateLocationDto.LocationName);
-        if (locationNameResult.IsFailure)
+        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
+        if (!validationResult.IsValid)
         {
-            return Error.Validation(new ErrorMessage(
-                "locationNameResult.is.invalid",
-                "LocationName is invalid"));
+            return validationResult.ToError();
         }
 
-        var locationName = locationNameResult.Value;
+        var locationName = LocationName.Create(command.CreateLocationDto.LocationName).Value;
 
-        var addressResult = Address.Create(
+        var address = Address.Create(
             command.CreateLocationDto.AddressDto.Country,
             command.CreateLocationDto.AddressDto.Region,
             command.CreateLocationDto.AddressDto.City,
             command.CreateLocationDto.AddressDto.Street,
-            command.CreateLocationDto.AddressDto.HouseNumber);
-        if (addressResult.IsFailure)
-        {
-            return Error.Validation(new ErrorMessage(
-                "address.is.invalid",
-                "LocationName is invalid"));
-        }
+            command.CreateLocationDto.AddressDto.HouseNumber).Value;
 
-        var address = addressResult.Value;
+        var timezone = Timezone.Create(command.CreateLocationDto.Timezone).Value;
 
-        var timezoneResult = Timezone.Create(command.CreateLocationDto.Timezone);
-        if (timezoneResult.IsFailure)
-        {
-            return Error.Validation(new ErrorMessage(
-                "timezone.is.invalid",
-                "LocationName is invalid"));
-        }
-
-        var timezone = timezoneResult.Value;
-
-        var locationResult = Location.Create(locationName, address, timezone);
-        if (locationResult.IsFailure)
-        {
-            return Error.Validation(new ErrorMessage(
-                "locationResult.is.invalid",
-                "Location is invalid"));
-        }
-
-        var location = locationResult.Value;
-
+        var location = Location.Create(locationName, address, timezone).Value;
 
         var result = await _locationRepository.AddAsync(location, cancellationToken);
 

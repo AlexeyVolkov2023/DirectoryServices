@@ -5,7 +5,16 @@ namespace DirectoryServices.Web.ResponseExtensions;
 
 public static class ResponseExtensions
 {
-    public static ActionResult ToResponse(this Failure errors)
+    public static ActionResult ToResponse(this Error error)
+    {
+        var statusCode = GetStatusCodeFromErrorType(error.Type);
+
+        var envelope = Envelope.Fail(error);
+
+        return new ObjectResult(envelope) { StatusCode = statusCode };
+    }
+
+    public static ActionResult ToResponse(this Errors errors)
     {
         if (!errors.Any())
         {

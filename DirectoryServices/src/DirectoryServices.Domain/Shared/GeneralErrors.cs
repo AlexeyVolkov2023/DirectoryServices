@@ -5,7 +5,7 @@ public static class GeneralErrors
     public static Error ValueIsInvalid(string? name = null)
     {
         string label = name ?? "value";
-        return Error.Validation("value.is.invalid", $"{label} is invalid");
+        return Error.Validation("value.is.invalid", $"{label} is invalid", $"{label}");
     }
 
     public static Error NotFound(Guid? id = null, string? name = null)

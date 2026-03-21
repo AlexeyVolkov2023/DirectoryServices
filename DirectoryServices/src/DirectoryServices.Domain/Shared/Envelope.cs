@@ -6,24 +6,24 @@ public record Envelope
 {
     public object? Result { get; }
 
-    public Error? Error { get; }
+    public Errors? Errors { get; }
 
-    public bool IsError => Error != null;
+    public bool IsError => Errors != null;
 
     public DateTime TimeGenerated { get; }
 
     [JsonConstructor]
-    private Envelope(object? result, Error? error)
+    private Envelope(object? result, Errors? errors)
     {
         Result = result;
-        Error = error;
+        Errors = errors;
         TimeGenerated = DateTime.UtcNow;
     }
 
     public static Envelope Ok(object? result = null) =>
         new(result, null);
 
-    public static Envelope Fail(Error error) =>
+    public static Envelope Fail(Errors error) =>
         new(null, error);
 }
 
@@ -31,14 +31,14 @@ public record Envelope<T>
 {
     public T? Result { get; }
 
-    public Failure? Errors { get; }
+    public Errors? Errors { get; }
 
     public bool IsError => Errors != null || (Errors != null && Errors.Any());
 
     public DateTime TimeGenerated { get; }
 
     [JsonConstructor]
-    private Envelope(T? result, Failure? errors)
+    private Envelope(T? result, Errors? errors)
     {
         Result = result;
         Errors = errors;
@@ -48,6 +48,6 @@ public record Envelope<T>
     public static Envelope<T> Ok(T? result = default) =>
         new(result, null);
 
-    public static Envelope<T> Error(Failure errors) =>
+    public static Envelope<T> Error(Errors errors) =>
         new(default, errors);
 }
