@@ -38,19 +38,19 @@ public record Address
         string houseNumber)
     {
         if (string.IsNullOrWhiteSpace(country))
-            return GeneralErrors.ValueIsInvalid(country);
+            return GeneralErrors.ValueIsInvalid("country");
 
         if (string.IsNullOrWhiteSpace(region))
-            return GeneralErrors.ValueIsInvalid(region);
+            return GeneralErrors.ValueIsInvalid("region");
 
         if (string.IsNullOrWhiteSpace(city))
-            return GeneralErrors.ValueIsInvalid(city);
+            return GeneralErrors.ValueIsInvalid("city");
 
         if (string.IsNullOrWhiteSpace(street))
-            return GeneralErrors.ValueIsInvalid(street);
+            return GeneralErrors.ValueIsInvalid("street");
 
         if (string.IsNullOrWhiteSpace(houseNumber))
-            return GeneralErrors.ValueIsInvalid(houseNumber);
+            return GeneralErrors.ValueIsInvalid("houseNumber");
 
 
         return new Address(

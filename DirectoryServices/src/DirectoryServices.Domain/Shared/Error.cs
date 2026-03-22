@@ -9,6 +9,7 @@ public record Error
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public ErrorType Type { get; }
 
+    [JsonConstructor]
     private Error(IReadOnlyList<ErrorMessage> messages, ErrorType type)
     {
         Messages = messages.ToArray();
@@ -47,10 +48,9 @@ public record Error
 
     public static Error Conflict(params IEnumerable<ErrorMessage> messages) =>
         new(messages, ErrorType.CONFLICT);
-
-    /*public Failure ToErrors => this;*/
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum ErrorType
 {
     VALIDATION,

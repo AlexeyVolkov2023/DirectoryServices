@@ -16,7 +16,7 @@ public record Timezone
     {
         if (string.IsNullOrWhiteSpace(timezone))
         {
-            return GeneralErrors.ValueIsInvalid(timezone);
+            return GeneralErrors.ValueIsInvalid("timezone");
         }
 
         return new Timezone(timezone);
