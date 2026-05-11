@@ -12,13 +12,12 @@ public class Position
 
     private Position(
         PositionName positionName,
-        Description description,
-        bool isActive)
+        Description description)
     {
         Id = PositionId.NewPositionId();
         PositionName = positionName;
         Description = description;
-        IsActive = isActive;
+        IsActive = true;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
     }
@@ -37,10 +36,9 @@ public class Position
 
     public static Result<Position> Create(
         PositionName positionName,
-        Description description,
-        bool isActive)
+        Description description)
     {
-        return Result.Success(new Position(positionName, description, isActive));
+        return Result.Success(new Position(positionName, description));
     }
 
     public void UpdateName(PositionName newPositionName)

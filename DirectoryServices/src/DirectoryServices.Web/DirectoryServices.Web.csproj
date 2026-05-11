@@ -32,7 +32,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Controllers\LocationControllers\Requests\" />
+      <Folder Include="Controllers\LocationController\Requests\" />
+      <Folder Include="Controllers\PositionController\Requests\" />
     </ItemGroup>
 
 </Project>

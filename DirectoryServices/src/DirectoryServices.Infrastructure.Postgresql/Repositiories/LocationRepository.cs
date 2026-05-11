@@ -1,5 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryServices.Application.Locations;
+using DirectoryServices.Application.Managements.Locations;
 using DirectoryServices.Domain.LocationManagement.Aggregate;
 
 namespace DirectoryServices.Infrastructure.Repositiories;
@@ -18,7 +18,6 @@ public class LocationRepository : ILocationRepository
         try
         {
             await _dbContext.Locations.AddAsync(location, cancellationToken);
-            await _dbContext.SaveChangesAsync(cancellationToken);
             return location.Id.Value;
         }
         catch (Exception e)

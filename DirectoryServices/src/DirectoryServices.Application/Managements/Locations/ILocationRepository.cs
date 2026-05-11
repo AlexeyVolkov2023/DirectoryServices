@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryServices.Domain.LocationManagement.Aggregate;
 
-namespace DirectoryServices.Application.Locations;
+namespace DirectoryServices.Application.Managements.Locations;
 
 public interface ILocationRepository
 {

@@ -1,15 +1,14 @@
 using DirectoryServices.Application.Abstractions;
-using DirectoryServices.Application.Locations.CreateLocation;
+using DirectoryServices.Application.Managements.Locations.CreateLocation;
 using DirectoryServices.Contracts.LocationDtos;
-using DirectoryServices.Domain.Shared;
 using DirectoryServices.Web.ResponseExtensions;
 using Microsoft.AspNetCore.Mvc;
 
-namespace DirectoryServices.Web.Controllers.LocationControllers;
+namespace DirectoryServices.Web.Controllers.LocationController;
 
 [ApiController]
 [Route("[controller]")]
-public class LocationControllers : ControllerBase
+public class LocationController : ControllerBase
 {
     [HttpPost("/api/locations")]
     public async Task<IActionResult> Create(

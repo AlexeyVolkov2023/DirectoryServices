@@ -7,27 +7,27 @@ using DirectoryServices.Domain.Shared;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 
-namespace DirectoryServices.Application.Locations.CreateLocation;
+namespace DirectoryServices.Application.Managements.Locations.CreateLocation;
 
 public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand>
 {
     private readonly ILogger<CreateLocationHandler> _logger;
     private readonly ILocationRepository _locationRepository;
     private readonly IValidator<CreateLocationCommand> _validator;
+    private readonly IUnitOfWork _unitOfWork;
 
     public CreateLocationHandler(
         ILogger<CreateLocationHandler> logger,
         ILocationRepository locationRepository,
-        IValidator<CreateLocationCommand> validator)
+        IValidator<CreateLocationCommand> validator,
+        IUnitOfWork unitOfWork)
     {
         _logger = logger;
         _locationRepository = locationRepository;
         _validator = validator;
+        _unitOfWork = unitOfWork;
     }
 
-    /// <summary>
-    /// Создает Location
-    /// </summary>
     public async Task<Result<Guid, Error>> Handle(
         CreateLocationCommand command,
         CancellationToken cancellationToken)
@@ -51,10 +51,29 @@ public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand
 
         var location = Location.Create(locationName, address, timezone).Value;
 
-        var result = await _locationRepository.AddAsync(location, cancellationToken);
+        await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
-        _logger.LogInformation("Created location with Id {location.Id}", location.Id);
+        try
+        {
+            await _locationRepository.AddAsync(location, cancellationToken);
 
-        return location.Id.Value;
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            _logger.LogInformation("Created location with Id {LocationId}", location.Id.Value);
+
+            await _unitOfWork.CommitTransactionAsync(cancellationToken);
+
+            return location.Id.Value;
+        }
+        catch (Exception ex)
+        {
+            await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+            _logger.LogError(ex, "An error occurred while creating location {LocationName}. Transaction rolled back.",
+                locationName.ToString());
+
+            return Error.Failure(
+                "location.creation.failed",
+                "An unexpected error occurred during location creation.");
+        }
     }
 }

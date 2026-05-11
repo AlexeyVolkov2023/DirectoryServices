@@ -4,6 +4,7 @@ using DirectoryServices.Domain.DepartmentManagement.Supporting;
 using DirectoryServices.Domain.DepartmentManagement.ValueObjects;
 using DirectoryServices.Domain.LocationManagement.Id;
 using DirectoryServices.Domain.PositionManagement.Id;
+using DirectoryServices.Domain.Shared;
 using Path = DirectoryServices.Domain.DepartmentManagement.ValueObjects.Path;
 
 namespace DirectoryServices.Domain.DepartmentManagement.Aggregate;
@@ -12,9 +13,9 @@ public class Department
 {
     private readonly List<Department> _children = [];
 
-    private readonly List<DepartmentLocation> _departmentLocations;
+    private readonly List<DepartmentLocation> _departmentLocations = [];
 
-    private readonly List<DepartmentPosition> _departmentPositions;
+    private readonly List<DepartmentPosition> _departmentPositions = [];
 
     public Department()
     {
@@ -25,38 +26,39 @@ public class Department
         Identifier identifier,
         Path path,
         Department? parent,
-        Depth depth,
-        bool isActive,
-        IEnumerable<Guid> locationIds,
-        IEnumerable<Guid> positionIds)
+        IEnumerable<Guid> locationIds)
     {
         Id = DepartmentId.NewDepartmentId();
         DepartmentName = departmentName;
         Identifier = identifier;
         Path = path;
         Parent = parent;
-        Depth = depth;
-        IsActive = isActive;
+        IsActive = true;
         CreatedAt = DateTime.UtcNow;
         UpdatedAt = DateTime.UtcNow;
 
-        var locations = locationIds.Select(locationId =>
-            new DepartmentLocation(
-                DepartmentLocationId.NewDepartmentLocationId(),
-                this,
-                LocationId.Create(locationId)))
-            .ToList();
+        if (parent == null)
+        {
+            Depth = Depth.RootDepth();
+        }
+        else
+        {
+            var calculatedDepthResult = parent.Depth.Increment();
 
-        var positions = positionIds.Select(positionId =>
-            new DepartmentPosition(
-                DepartmentPositionId.NewDepartmentPositionId(),
-                this,
-                PositionId.Create(positionId)))
+            Depth = calculatedDepthResult.Value;
+        }
+
+
+        var locations = locationIds.Select(locationId =>
+                new DepartmentLocation(
+                    DepartmentLocationId.NewDepartmentLocationId(),
+                    this,
+                    LocationId.Create(locationId)))
             .ToList();
 
         _departmentLocations = locations;
 
-        _departmentPositions = positions;
+        _departmentPositions = new List<DepartmentPosition>();
     }
 
     public DepartmentId Id { get; private set; }
@@ -83,15 +85,11 @@ public class Department
 
     public IReadOnlyList<DepartmentPosition> DepartmentPositions => _departmentPositions;
 
-
-    public static Result<Department> Create(
+    public static Result<Department, Error> Create(
         DepartmentName departmentName,
         Identifier identifier,
         Department? parent,
-        Depth depth,
-        bool isActive,
-        IEnumerable<Guid> locationIds,
-        IEnumerable<Guid> positionIds)
+        IEnumerable<Guid> locationIds)
     {
         var path = BuildPath(parent, identifier).Value;
 
@@ -100,13 +98,10 @@ public class Department
             identifier,
             path,
             parent,
-            depth,
-            isActive,
-            locationIds,
-            positionIds);
+            locationIds);
     }
 
-    private static Result<Path> BuildPath(Department? parent, Identifier identifier)
+    private static Result<Path, Error> BuildPath(Department? parent, Identifier identifier)
     {
         string pathStr = parent?.Path.Value ?? string.Empty;
         if (!string.IsNullOrEmpty(pathStr))
@@ -117,30 +112,23 @@ public class Department
         return Path.Create(pathStr);
     }
 
-    public void UpdateName(DepartmentName newName)
+    public Result<Guid, Error> AddPosition(PositionId positionId)
     {
-        DepartmentName = newName;
+        if (_departmentPositions.Exists(dp => dp.PositionId == positionId))
+        {
+            return GeneralErrors.Failure(
+                $"Position {positionId.Value} is already assigned to this department.");
+        }
+
+        var departmentPositionToAdded = new DepartmentPosition(
+            DepartmentPositionId.NewDepartmentPositionId(),
+            this,
+            positionId);
+
+        _departmentPositions.Add(departmentPositionToAdded);
+
         UpdatedAt = DateTime.UtcNow;
+
+        return positionId.Value;
     }
-
-
-    public Result UpdateIdentifier(Identifier newIdentifier)
-    {
-        var pathResult = BuildPath(Parent, newIdentifier);
-        if (pathResult.IsFailure)
-            return pathResult;
-
-        Identifier = newIdentifier;
-        Path = pathResult.Value;
-        UpdatedAt = DateTime.UtcNow;
-
-        return Result.Success();
-    }
-
-    public void UpdateDepth(Depth newDepth)
-    {
-        Depth = newDepth;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
 }
