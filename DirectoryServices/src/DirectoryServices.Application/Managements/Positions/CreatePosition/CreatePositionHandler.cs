@@ -40,7 +40,6 @@ public class CreatePositionHandler : ICommandHandler<Guid, CreatePositionCommand
         }
 
         var departmentIds = command.CreatePositionDto.DepartmentIds.ToList();
-
         if (departmentIds.Count != 0)
         {
             bool allDepartmentsExist = await _positionRepository.DoAllDepartmentsExistAndActiveAsync(
@@ -56,9 +55,7 @@ public class CreatePositionHandler : ICommandHandler<Guid, CreatePositionCommand
 
         var positionName = PositionName.Create(command.CreatePositionDto.PositionName).Value;
 
-        bool uniqueName = await _positionRepository
-            .ExistsActivePositionWithNameAsync(positionName, cancellationToken);
-
+        bool uniqueName = await _positionRepository.ExistsActivePositionWithNameAsync(positionName, cancellationToken);
         if (uniqueName)
         {
             return GeneralErrors.ValueIsInvalid($"{positionName} must be unique");
@@ -69,47 +66,33 @@ public class CreatePositionHandler : ICommandHandler<Guid, CreatePositionCommand
         var position = Position.Create(positionName, description).Value;
 
         var result = await _positionRepository.AddAsync(position, cancellationToken);
-
         if (result.IsFailure)
         {
-            return Error.Failure(
-                "position.not.created",
-                "Position was not created");
+            return Error.Failure("position.not.created", "Position was not created");
         }
 
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
-        try
-        {
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            _logger.LogInformation("Created position with Id {PositionId}", position.Id.Value);
-
-            var addingResult = await _positionRepository
-                .AddPositionToDepartments(position.Id, departmentIds, cancellationToken);
-
-            if (addingResult.IsFailure)
-            {
-                await _unitOfWork.RollbackTransactionAsync(cancellationToken);
-                return Error.Failure(
-                    "positionId.not.added.to.departments",
-                    "Position ID is not added to the departments");
-            }
-
-            await _unitOfWork.CommitTransactionAsync(cancellationToken);
-            return position.Id.Value;
-        }
-        catch (Exception ex)
+        var saveResult = await _unitOfWork.SaveChangesAsync(cancellationToken);
+        if (saveResult <= 0)
         {
             await _unitOfWork.RollbackTransactionAsync(cancellationToken);
-            _logger.LogError(
-                ex,
-                "An error occurred while creating position {PositionName}. Transaction rolled back.",
-                positionName?.ToString() ?? "Unknown");
-
-            return Error.Failure(
-                "position.creation.failed",
-                "An unexpected error occurred during position creation.");
+            return Error.Failure("position.not.saved", "Failed to save the position.");
         }
+
+        _logger.LogInformation("Created position with Id {PositionId}", position.Id.Value);
+
+        var addingResult =
+            await _positionRepository.AddPositionToDepartments(position.Id, departmentIds, cancellationToken);
+        if (addingResult.IsFailure)
+        {
+            await _unitOfWork.RollbackTransactionAsync(cancellationToken);
+            return Error.Failure(
+                "positionId.not.added.to.departments",
+                "Position ID is not added to the departments");
+        }
+
+        await _unitOfWork.CommitTransactionAsync(cancellationToken);
+        return position.Id.Value;
     }
 }

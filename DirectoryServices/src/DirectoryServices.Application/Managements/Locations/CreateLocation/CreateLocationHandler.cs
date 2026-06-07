@@ -40,6 +40,14 @@ public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand
 
         var locationName = LocationName.Create(command.CreateLocationDto.LocationName).Value;
 
+        var locationExist = await _locationRepository.GetByLocationNameAsync(
+            locationName,
+            cancellationToken);
+        if (locationExist.IsSuccess)
+        {
+            return GeneralErrors.AlreadyExist();
+        }
+
         var address = Address.Create(
             command.CreateLocationDto.AddressDto.Country,
             command.CreateLocationDto.AddressDto.Region,
@@ -53,27 +61,19 @@ public class CreateLocationHandler : ICommandHandler<Guid, CreateLocationCommand
 
         await _unitOfWork.BeginTransactionAsync(cancellationToken);
 
-        try
-        {
-            await _locationRepository.AddAsync(location, cancellationToken);
-
-            await _unitOfWork.SaveChangesAsync(cancellationToken);
-
-            _logger.LogInformation("Created location with Id {LocationId}", location.Id.Value);
-
-            await _unitOfWork.CommitTransactionAsync(cancellationToken);
-
-            return location.Id.Value;
-        }
-        catch (Exception ex)
+        var result = await _locationRepository.AddAsync(location, cancellationToken);
+        if (result.IsFailure)
         {
             await _unitOfWork.RollbackTransactionAsync(cancellationToken);
-            _logger.LogError(ex, "An error occurred while creating location {LocationName}. Transaction rolled back.",
-                locationName.ToString());
-
-            return Error.Failure(
-                "location.creation.failed",
-                "An unexpected error occurred during location creation.");
+            return Error.Failure("location.creation.failed", "Location was not created.");
         }
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+        _logger.LogInformation("Created location with Id {LocationId}", location.Id.Value);
+
+        await _unitOfWork.CommitTransactionAsync(cancellationToken);
+
+        return location.Id.Value;
     }
 }
