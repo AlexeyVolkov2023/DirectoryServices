@@ -3,7 +3,7 @@ using DirectoryServices.Contracts.LocationDtos;
 using DirectoryServices.Domain.LocationManagement.ValueObjects;
 using FluentValidation;
 
-namespace DirectoryServices.Application.Locations.Validation;
+namespace DirectoryServices.Application.Managements.Locations.Validation;
 
 public class AddressDtoValidator : AbstractValidator<AddressDto>
 {

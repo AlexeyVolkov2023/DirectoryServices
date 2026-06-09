@@ -26,12 +26,13 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
                 .IsRequired();
         });
 
-        builder.ComplexProperty(d => d.Identifier, ib =>
+        builder.OwnsOne(d => d.Identifier, identifierBuilder =>
         {
-            ib.Property(i => i.Value)
+            identifierBuilder.Property(i => i.Value)
                 .HasColumnName("identifier")
                 .HasMaxLength(LengthConstants.Length150)
                 .IsRequired();
+            identifierBuilder.HasIndex(i => i.Value).IsUnique();
         });
 
         builder.ComplexProperty(d => d.Path, pb =>

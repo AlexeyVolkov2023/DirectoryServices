@@ -17,12 +17,12 @@ public record LocationName
     {
         if (string.IsNullOrWhiteSpace(value))
         {
-            return GeneralErrors.ValueIsInvalid("location.name");
+            return GeneralErrors.ValueIsInvalid("locationName");
         }
 
         if (value.Length < LengthConstants.Length3 || value.Length > LengthConstants.Length120)
         {
-            return GeneralErrors.ValueIsInvalid("location.name");
+            return GeneralErrors.ValueIsInvalid("locationName");
         }
 
         return new LocationName(value);

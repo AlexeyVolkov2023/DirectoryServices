@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryServices.Domain.Shared;
 
 namespace DirectoryServices.Domain.PositionManagement.ValueObjects;
 
@@ -12,18 +13,16 @@ public record PositionName
     public string Value { get; }
 
 
-    public static Result<PositionName> Create(string value)
+    public static Result<PositionName, Error> Create(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
-            return Result.Failure<PositionName>("PositionName cannot be null or empty.");
+            return GeneralErrors.ValueIsInvalid("positionName");
 
         if (value.Length < LengthConstants.Length3 || value.Length > LengthConstants.Length100)
         {
-            return Result.Failure<PositionName>(
-                $"PositionName must be between {LengthConstants.Length3}" +
-                $" and {LengthConstants.Length100} characters long.");
+            return GeneralErrors.ValueIsInvalid("positionName");
         }
 
-        return Result.Success(new PositionName(value));
+        return new PositionName(value);
     }
 }

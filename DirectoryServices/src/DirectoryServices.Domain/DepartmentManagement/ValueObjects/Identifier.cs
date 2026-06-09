@@ -1,5 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using CSharpFunctionalExtensions;
+using DirectoryServices.Domain.Shared;
 
 namespace DirectoryServices.Domain.DepartmentManagement.ValueObjects;
 
@@ -12,21 +13,17 @@ public record Identifier
 
     public string Value { get; }
 
-    public static Result<Identifier> Create(string value)
+    public static Result<Identifier, Error> Create(string value)
     {
         if (string.IsNullOrWhiteSpace(value))
-            return Result.Failure<Identifier>("Identifier cannot be null or empty.");
+            return GeneralErrors.ValueIsInvalid("identifier");
 
         if (value.Length < LengthConstants.Length3 || value.Length > LengthConstants.Length150)
-        {
-            return Result.Failure<Identifier>(
-                $"Identifier must be between {LengthConstants.Length3}" +
-                $" and {LengthConstants.Length150} characters long.");
-        }
+            return GeneralErrors.ValueIsInvalid("identifier");
 
-        if (!Regex.IsMatch(value, @"^[a-zA-Z0-9-]+$"))
-            return Result.Failure<Identifier>("Identifier must contain only Latin letters, digits, and hyphens.");
+        if (!Regex.IsMatch(value, @"^[a-zA-Z][a-zA-Z .-]*$"))
+            return GeneralErrors.ValueIsInvalid("identifier");
 
-        return Result.Success(new Identifier(value));
+        return new Identifier(value);
     }
 }
