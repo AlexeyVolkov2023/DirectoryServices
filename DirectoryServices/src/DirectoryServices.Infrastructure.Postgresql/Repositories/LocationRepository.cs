@@ -1,11 +1,12 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryServices.Application.Managements.Locations;
 using DirectoryServices.Domain.LocationManagement.Aggregate;
+using DirectoryServices.Domain.LocationManagement.Id;
 using DirectoryServices.Domain.LocationManagement.ValueObjects;
 using DirectoryServices.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 
-namespace DirectoryServices.Infrastructure.Repositiories;
+namespace DirectoryServices.Infrastructure.Repositories;
 
 public class LocationRepository : ILocationRepository
 {
@@ -28,8 +29,8 @@ public class LocationRepository : ILocationRepository
             return Result.Failure<Guid>(e.Message);
         }
     }
-    
-    public async Task<Result<Location, Error>> GetByLocationNameAsync(
+
+    public async Task<Result<LocationName, Error>> GetByLocationNameAsync(
         LocationName locationName,
         CancellationToken cancellationToken = default)
     {
@@ -41,6 +42,35 @@ public class LocationRepository : ILocationRepository
             return Error.NotFound();
         }
 
+        return locationName;
+    }
+
+    public async Task<Result<Location, Error>> GetByIdAsync(
+        LocationId locationId,
+        CancellationToken cancellationToken = default)
+    {
+        var location = await _dbContext.Locations
+            .FirstOrDefaultAsync(l => l.Id == locationId && l.IsActive, cancellationToken);
+
+        if (location is null)
+        {
+            return GeneralErrors.NotFound();
+        }
+
         return location;
+    }
+
+    public async Task<bool> DoesLocationNameExistExcludingIdAsync(
+        LocationName locationName,
+        LocationId excludedId,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Locations
+            .AnyAsync(
+                l =>
+                    l.LocationName == locationName
+                    && l.Id != excludedId
+                    && l.IsActive,
+                cancellationToken);
     }
 }
