@@ -8,7 +8,7 @@ using DirectoryServices.Domain.PositionManagement.ValueObjects;
 using DirectoryServices.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 
-namespace DirectoryServices.Infrastructure.Repositiories;
+namespace DirectoryServices.Infrastructure.Repositories;
 
 public class PositionRepository : IPositionRepository
 {

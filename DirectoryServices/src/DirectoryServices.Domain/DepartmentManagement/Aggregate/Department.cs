@@ -131,4 +131,33 @@ public class Department
 
         return positionId.Value;
     }
+
+    public Result UpdateLocations(IEnumerable<Guid> newLocationIds)
+    {
+        _departmentLocations.Clear();
+
+        var newLocations = newLocationIds.Select(locationId =>
+                new DepartmentLocation(
+                    DepartmentLocationId.NewDepartmentLocationId(),
+                    this,
+                    LocationId.Create(locationId)))
+            .ToList();
+
+        _departmentLocations.AddRange(newLocations);
+
+        UpdatedAt = DateTime.UtcNow;
+
+        return Result.Success();
+    }
+
+    public Result UpdateDetails(DepartmentName newDepartmentName, Identifier newIdentifier)
+    {
+        DepartmentName = newDepartmentName;
+
+        Identifier = newIdentifier;
+
+        UpdatedAt = DateTime.UtcNow;
+
+        return Result.Success();
+    }
 }

@@ -15,4 +15,15 @@ public interface IDepartmentRepository
     Task<Result<Department, Error>> GetByIdAsync(DepartmentId departmentId, CancellationToken cancellationToken);
 
     Task<bool> LocationsExistAsync(IEnumerable<Guid> locationIds, CancellationToken cancellationToken);
+
+    Task<Result<bool, Error>> CheckLocationsExistAndActiveAsync(
+        IEnumerable<Guid> locationIds,
+        CancellationToken cancellationToken = default);
+
+    Task Save();
+
+    Task<Result<Department, Error>> GetByIdWithIncludeAsync(
+        DepartmentId departmentId,
+        CancellationToken cancellationToken = default);
+
 }

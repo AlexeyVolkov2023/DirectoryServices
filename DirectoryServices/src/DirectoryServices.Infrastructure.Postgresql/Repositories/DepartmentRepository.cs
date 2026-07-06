@@ -6,7 +6,7 @@ using DirectoryServices.Domain.DepartmentManagement.ValueObjects;
 using DirectoryServices.Domain.Shared;
 using Microsoft.EntityFrameworkCore;
 
-namespace DirectoryServices.Infrastructure.Repositiories;
+namespace DirectoryServices.Infrastructure.Repositories;
 
 public class DepartmentRepository : IDepartmentRepository
 {
@@ -78,5 +78,49 @@ public class DepartmentRepository : IDepartmentRepository
             .CountAsync(cancellationToken);
 
         return existingCount == locationIdsList.Distinct().Count();
+    }
+
+    public async Task<Result<bool, Error>> CheckLocationsExistAndActiveAsync(
+        IEnumerable<Guid> locationIds,
+        CancellationToken cancellationToken = default)
+    {
+        var locationIdsList = locationIds.ToList();
+
+        var existingActiveCount = await _dbContext.Locations
+            .Where(l => locationIdsList.Contains(l.Id) && l.IsActive)
+            .Select(l => l.Id)
+            .Distinct()
+            .CountAsync(cancellationToken);
+
+        if (existingActiveCount != locationIdsList.Count)
+        {
+            return Result.Failure<bool, Error>(
+                GeneralErrors.ValueIsInvalid("One or more locations do not exist or are not active."));
+        }
+
+        return Result.Success<bool, Error>(true);
+    }
+
+    public async Task Save()
+    {
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task<Result<Department, Error>> GetByIdWithIncludeAsync(
+        DepartmentId departmentId,
+        CancellationToken cancellationToken = default)
+    {
+        var department = await _dbContext.Departments
+            .Include(l => l.DepartmentLocations)
+            .FirstOrDefaultAsync(d => d.Id == departmentId && d.IsActive, cancellationToken);
+
+        if (department is null)
+        {
+            return Result.Failure<Department, Error>(GeneralErrors.NotFound(
+                departmentId.Value,
+                "Department not found or inactive"));
+        }
+
+        return Result.Success<Department, Error>(department);
     }
 }
