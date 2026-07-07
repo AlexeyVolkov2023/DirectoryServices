@@ -1,6 +1,7 @@
 ﻿using DirectoryServices.Application.Abstractions;
-using DirectoryServices.Application.Managements.Departments.AddingLink;
 using DirectoryServices.Application.Managements.Departments.CreateDepartment;
+using DirectoryServices.Application.Managements.Departments.Link.AddingLink;
+using DirectoryServices.Application.Managements.Departments.Link.Unlink;
 using DirectoryServices.Application.Managements.Departments.Update.UpdateDetails;
 using DirectoryServices.Application.Managements.Departments.Update.UpdateLocationList;
 using DirectoryServices.Contracts.DepartmentDto;
@@ -71,6 +72,23 @@ public class DepartmentController : ControllerBase
         CancellationToken cancellationToken)
     {
         var command = new AddLinkCommand(departmentId, locationId);
+
+        var result = await handler.Handle(command, cancellationToken);
+
+        if (result.IsFailure)
+            return result.Error.ToResponse();
+
+        return Ok(result.Value);
+    }
+
+    [HttpDelete("/api/departments/{departmentId}/locations/{locationId}")]
+    public async Task<IActionResult> UnlinkLocation(
+        [FromRoute] Guid departmentId,
+        [FromRoute] Guid locationId,
+        [FromServices] ICommandHandler<Guid, UnlinkDepartmentLocationCommand> handler,
+        CancellationToken cancellationToken)
+    {
+        var command = new UnlinkDepartmentLocationCommand(departmentId, locationId);
 
         var result = await handler.Handle(command, cancellationToken);
 

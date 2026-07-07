@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace DirectoryServices.Application.Managements.Departments.AddingLink;
+namespace DirectoryServices.Application.Managements.Departments.Link.AddingLink;
 
 public class AddLinkCommandValidator : AbstractValidator<AddLinkCommand>
 {

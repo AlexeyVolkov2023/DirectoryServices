@@ -13,7 +13,7 @@ public class Department
 {
     private readonly List<Department> _children = [];
 
-    private readonly List<DepartmentLocation> _departmentLocations = [];
+    private readonly List<DepartmentLocation?> _departmentLocations = [];
 
     private readonly List<DepartmentPosition> _departmentPositions = [];
 
@@ -173,5 +173,17 @@ public class Department
         UpdatedAt = DateTime.UtcNow;
 
         return newLocationLink.DepartmentLocationId.Value;
+    }
+
+    public Result<Guid, Error> RemoveLocationFromDepartment(DepartmentLocationId departmentLocationId)
+    {
+        var departmentLocation =
+            _departmentLocations.FirstOrDefault(dl => dl != null && dl.DepartmentLocationId == departmentLocationId);
+
+        _departmentLocations.Remove(departmentLocation);
+
+        UpdatedAt = DateTime.UtcNow;
+
+        return departmentLocationId.Value;
     }
 }

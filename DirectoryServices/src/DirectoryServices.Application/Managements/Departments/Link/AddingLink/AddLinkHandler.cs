@@ -7,7 +7,7 @@ using DirectoryServices.Domain.Shared;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 
-namespace DirectoryServices.Application.Managements.Departments.AddingLink;
+namespace DirectoryServices.Application.Managements.Departments.Link.AddingLink;
 
 public class AddLinkHandler : ICommandHandler<Guid, AddLinkCommand>
 {
