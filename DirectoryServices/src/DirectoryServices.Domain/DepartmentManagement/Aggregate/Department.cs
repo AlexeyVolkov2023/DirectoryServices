@@ -160,4 +160,18 @@ public class Department
 
         return Result.Success();
     }
+
+    public Result<Guid, Error> AddLocationToDepartment(LocationId locationId)
+    {
+        var newLocationLink = new DepartmentLocation(
+            DepartmentLocationId.NewDepartmentLocationId(),
+            this,
+            locationId);
+
+        _departmentLocations.Add(newLocationLink);
+
+        UpdatedAt = DateTime.UtcNow;
+
+        return newLocationLink.DepartmentLocationId.Value;
+    }
 }

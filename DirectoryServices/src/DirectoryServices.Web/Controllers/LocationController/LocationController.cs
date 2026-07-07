@@ -18,7 +18,7 @@ public class LocationController : ControllerBase
     [HttpPost("/api/locations")]
     public async Task<IActionResult> Create(
         [FromServices] ICommandHandler<Guid, CreateLocationCommand> handler,
-        [FromBody] CreateLocationDto request,
+        [FromBody] LocationDetailsDto request,
         CancellationToken cancellationToken)
     {
         var command = new CreateLocationCommand(request);
@@ -31,7 +31,7 @@ public class LocationController : ControllerBase
         return Ok(result.Value);
     }
 
-    [HttpPatch("PATCH /locations/{locationId}")]
+    [HttpPatch("/api/locations/{locationId}")]
     public async Task<IActionResult> UpdateDetails(
         [FromRoute] Guid locationId,
         [FromServices] ICommandHandler<Guid, UpdateLocationDetailsCommand> handler,
@@ -48,7 +48,7 @@ public class LocationController : ControllerBase
         return Ok(result.Value);
     }
 
-    [HttpPatch("PATCH /locations/{locationId}/address")]
+    [HttpPatch("/api/locations/{locationId}/address")]
     public async Task<IActionResult> UpdateLocationAddress(
         [FromRoute] Guid locationId,
         [FromServices] ICommandHandler<Guid, UpdateLocationAddressCommand> handler,
@@ -65,7 +65,7 @@ public class LocationController : ControllerBase
         return Ok(result.Value);
     }
 
-    [HttpPatch("PATCH /locations/{locationId}/locationName")]
+    [HttpPatch("/api/locations/{locationId}/locationName")]
     public async Task<IActionResult> UpdateLocationName(
         [FromRoute] Guid locationId,
         [FromServices] ICommandHandler<Guid, UpdateLocationNameCommand> handler,
@@ -82,7 +82,7 @@ public class LocationController : ControllerBase
         return Ok(result.Value);
     }
 
-    [HttpDelete("DELETE /locations/{locationId}")]
+    [HttpDelete("/api/locations/{locationId}")]
     public async Task<IActionResult> SoftDeleteLocation(
         [FromRoute] Guid locationId,
         [FromServices] ICommandHandler<Guid, SoftDeleteLocationCommand> handler,

@@ -8,10 +8,10 @@ public class UpdateDepartmentDetailsCommandValidator : AbstractValidator<UpdateD
 {
     public UpdateDepartmentDetailsCommandValidator()
     {
-        RuleFor(x => x.UpdateDepartmentDto.DepartmentName)
+        RuleFor(x => x.UpdateDepartmentDetailsDto.DepartmentName)
             .MustBeValueObject(DepartmentName.Create);
 
-        RuleFor(x => x.UpdateDepartmentDto.Identifier)
+        RuleFor(x => x.UpdateDepartmentDetailsDto.Identifier)
             .MustBeValueObject(Identifier.Create);
 
         RuleFor(x => x.DepartmentId)

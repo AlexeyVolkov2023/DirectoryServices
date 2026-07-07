@@ -45,7 +45,7 @@ public class UpdateDepartmentDetailsHandler : ICommandHandler<Guid, UpdateDepart
             return departmentResult.Error;
         }
 
-        var identifier = Identifier.Create(command.UpdateDepartmentDto.Identifier).Value;
+        var identifier = Identifier.Create(command.UpdateDepartmentDetailsDto.Identifier).Value;
 
         var departmentExist = await _departmentRepository.GetByIdentifierAsync(
             identifier, cancellationToken);
@@ -53,7 +53,7 @@ public class UpdateDepartmentDetailsHandler : ICommandHandler<Guid, UpdateDepart
             return GeneralErrors.AlreadyExist();
         // Path  не пересчитываю
 
-        var departmentName = DepartmentName.Create(command.UpdateDepartmentDto.DepartmentName).Value;
+        var departmentName = DepartmentName.Create(command.UpdateDepartmentDetailsDto.DepartmentName).Value;
 
         var departmentToUpdate = departmentResult.Value;
 
