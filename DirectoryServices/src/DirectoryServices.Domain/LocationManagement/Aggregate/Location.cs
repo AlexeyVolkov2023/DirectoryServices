@@ -47,27 +47,33 @@ public class Location
         return new Location(locationName, address, timezone);
     }
 
-    public void UpdateName(LocationName newLocationName)
+    public Result UpdateName(LocationName newLocationName)
     {
         LocationName = newLocationName;
         UpdatedAt = DateTime.UtcNow;
+        return Result.Success();
     }
 
-    public void UpdateAddress(Address newAddress)
+    public Result UpdateAddress(Address newAddress, Timezone newTimezone)
     {
         Address = newAddress;
         UpdatedAt = DateTime.UtcNow;
+        return Result.Success();
     }
 
-    public void UpdateTimezone(Timezone newTimezone)
-    {
-        Timezone = newTimezone;
-        UpdatedAt = DateTime.UtcNow;
-    }
-
-    public void SetActive(bool isActive)
+    public Result SetActive(bool isActive)
     {
         IsActive = isActive;
         UpdatedAt = DateTime.UtcNow;
+        return Result.Success();
+    }
+
+    public Result UpdateDetails(LocationName newLocationName, Address newAddress, Timezone newTimezone)
+    {
+        LocationName = newLocationName;
+        Address = newAddress;
+        Timezone = newTimezone;
+        UpdatedAt = DateTime.UtcNow;
+        return Result.Success();
     }
 }

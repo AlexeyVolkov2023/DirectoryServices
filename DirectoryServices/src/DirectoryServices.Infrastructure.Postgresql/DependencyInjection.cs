@@ -2,7 +2,7 @@
 using DirectoryServices.Application.Managements.Departments;
 using DirectoryServices.Application.Managements.Locations;
 using DirectoryServices.Application.Managements.Positions;
-using DirectoryServices.Infrastructure.Repositiories;
+using DirectoryServices.Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

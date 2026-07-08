@@ -13,7 +13,7 @@ public class Department
 {
     private readonly List<Department> _children = [];
 
-    private readonly List<DepartmentLocation> _departmentLocations = [];
+    private readonly List<DepartmentLocation?> _departmentLocations = [];
 
     private readonly List<DepartmentPosition> _departmentPositions = [];
 
@@ -130,5 +130,60 @@ public class Department
         UpdatedAt = DateTime.UtcNow;
 
         return positionId.Value;
+    }
+
+    public Result UpdateLocations(IEnumerable<Guid> newLocationIds)
+    {
+        _departmentLocations.Clear();
+
+        var newLocations = newLocationIds.Select(locationId =>
+                new DepartmentLocation(
+                    DepartmentLocationId.NewDepartmentLocationId(),
+                    this,
+                    LocationId.Create(locationId)))
+            .ToList();
+
+        _departmentLocations.AddRange(newLocations);
+
+        UpdatedAt = DateTime.UtcNow;
+
+        return Result.Success();
+    }
+
+    public Result UpdateDetails(DepartmentName newDepartmentName, Identifier newIdentifier)
+    {
+        DepartmentName = newDepartmentName;
+
+        Identifier = newIdentifier;
+
+        UpdatedAt = DateTime.UtcNow;
+
+        return Result.Success();
+    }
+
+    public Result<Guid, Error> AddLocationToDepartment(LocationId locationId)
+    {
+        var newLocationLink = new DepartmentLocation(
+            DepartmentLocationId.NewDepartmentLocationId(),
+            this,
+            locationId);
+
+        _departmentLocations.Add(newLocationLink);
+
+        UpdatedAt = DateTime.UtcNow;
+
+        return newLocationLink.DepartmentLocationId.Value;
+    }
+
+    public Result<Guid, Error> RemoveLocationFromDepartment(DepartmentLocationId departmentLocationId)
+    {
+        var departmentLocation =
+            _departmentLocations.FirstOrDefault(dl => dl != null && dl.DepartmentLocationId == departmentLocationId);
+
+        _departmentLocations.Remove(departmentLocation);
+
+        UpdatedAt = DateTime.UtcNow;
+
+        return departmentLocationId.Value;
     }
 }
