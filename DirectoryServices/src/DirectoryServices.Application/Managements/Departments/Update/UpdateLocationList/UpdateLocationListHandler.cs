@@ -67,8 +67,6 @@ public class UpdateLocationListHandler : ICommandHandler<Guid, UpdateLocationLis
                 "Locations list is not updated");
         }
 
-        await _departmentRepository.Save();
-
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
         await _unitOfWork.CommitTransactionAsync(cancellationToken);

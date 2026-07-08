@@ -123,4 +123,18 @@ public class DepartmentRepository : IDepartmentRepository
 
         return Result.Success<Department, Error>(department);
     }
+
+    public async Task<bool> DoesIdentifierExistExcludingIdAsync(
+        DepartmentId excludedId,
+        Identifier identifier,
+        CancellationToken cancellationToken = default)
+    {
+        return await _dbContext.Departments
+            .AnyAsync(
+                d =>
+                    d.Identifier.Value == identifier.Value
+                    && d.Id != excludedId
+                    && d.IsActive,
+                cancellationToken);
+    }
 }

@@ -30,7 +30,7 @@ public class DepartmentController : ControllerBase
         return Ok(result.Value);
     }
 
-    [HttpPatch("/api/departments/{departmentId}")]
+    [HttpPatch("/api/departments/{departmentId:guid}")]
     public async Task<IActionResult> UpdateDepartmentDetails(
         [FromRoute] Guid departmentId,
         [FromServices] ICommandHandler<Guid, UpdateDepartmentDetailsCommand> handler,

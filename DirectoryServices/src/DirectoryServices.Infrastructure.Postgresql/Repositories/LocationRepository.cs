@@ -30,7 +30,7 @@ public class LocationRepository : ILocationRepository
         }
     }
 
-    public async Task<Result<LocationName, Error>> GetByLocationNameAsync(
+    public async Task<Result<Location, Error>> GetByLocationNameAsync(
         LocationName locationName,
         CancellationToken cancellationToken = default)
     {
@@ -42,7 +42,7 @@ public class LocationRepository : ILocationRepository
             return Error.NotFound();
         }
 
-        return locationName;
+        return location;
     }
 
     public async Task<Result<Location, Error>> GetByIdAsync(

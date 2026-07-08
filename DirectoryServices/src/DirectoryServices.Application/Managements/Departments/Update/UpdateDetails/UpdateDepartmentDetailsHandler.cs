@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryServices.Application.Abstractions;
 using DirectoryServices.Application.Extensions;
+using DirectoryServices.Domain.DepartmentManagement.Id;
 using DirectoryServices.Domain.DepartmentManagement.ValueObjects;
 using DirectoryServices.Domain.Shared;
 using FluentValidation;
@@ -37,8 +38,10 @@ public class UpdateDepartmentDetailsHandler : ICommandHandler<Guid, UpdateDepart
             return validationResult.ToError();
         }
 
+        var departmentId = DepartmentId.Create(command.DepartmentId);
+
         var departmentResult = await _departmentRepository.GetByIdAsync(
-            command.DepartmentId,
+            departmentId,
             cancellationToken);
         if (departmentResult.IsFailure)
         {
@@ -47,9 +50,11 @@ public class UpdateDepartmentDetailsHandler : ICommandHandler<Guid, UpdateDepart
 
         var identifier = Identifier.Create(command.UpdateDepartmentDetailsDto.Identifier).Value;
 
-        var departmentExist = await _departmentRepository.GetByIdentifierAsync(
-            identifier, cancellationToken);
-        if (departmentExist.IsSuccess)
+        var departmentExist = await _departmentRepository.DoesIdentifierExistExcludingIdAsync(
+            departmentId,
+            identifier,
+            cancellationToken);
+        if (departmentExist)
             return GeneralErrors.AlreadyExist();
         // Path  не пересчитываю
 

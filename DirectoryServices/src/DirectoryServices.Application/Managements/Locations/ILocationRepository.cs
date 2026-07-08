@@ -10,7 +10,7 @@ public interface ILocationRepository
 {
     Task<Result<Guid>> AddAsync(Location location, CancellationToken cancellationToken);
 
-    Task<Result<LocationName, Error>> GetByLocationNameAsync(
+    Task<Result<Location, Error>> GetByLocationNameAsync(
         LocationName locationName,
         CancellationToken cancellationToken = default);
 

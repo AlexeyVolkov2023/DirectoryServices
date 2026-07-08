@@ -26,4 +26,8 @@ public interface IDepartmentRepository
         DepartmentId departmentId,
         CancellationToken cancellationToken = default);
 
+    Task<bool> DoesIdentifierExistExcludingIdAsync(
+        DepartmentId excludedId,
+        Identifier identifier,
+        CancellationToken cancellationToken = default);
 }
